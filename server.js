@@ -1,6 +1,7 @@
 var request = require('request');
 var cheerio = require('cheerio');
 var url = '';
+var fs = require('fs');
 
 var len = process.argv.length;
 if(len < 3){
@@ -28,7 +29,9 @@ request({url:url,headers:{'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 
   }
   else//If no error, start scraping
 	{
+		var newfile = fs.createWriteStream("data.txt");
     var $ = cheerio.load(body);
+		$ = cheerio.load($('#searchResultsContainer').html().trim());
 		if ($('span[class=nomatch]').text().trim() === 'no matches')// if search term doesnt exists end program
 		{
 			console.log('Search term doesnt exists.','Process Ended');
@@ -47,8 +50,13 @@ request({url:url,headers:{'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 
 			else{
 				pname = pname.trim();
 			console.log('Data #'+i+$('a#DCTmerchNameLnk'+i+'.newMerchantName').text().trim()+$('#DCTmerchNameLnk'+i).text().trim()+pname);
+			// fs.appendFile('data.txt', 'Data #'+i+$('a#DCTmerchNameLnk'+i+'.newMerchantName').text().trim()+$('#DCTmerchNameLnk'+i).text().trim()+pname, (err) => {
+			//   if (err) throw err;
+			//   console.log('The "data to append" was appended to file!');
+			// });
 		}
 	}
 	}
     }
 	});
+
